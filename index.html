@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetBridge — Find Your Forever Friend</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FAF6EF;
+    --warm-white: #FFFDF9;
+    --sand: #E8DDD0;
+    --tan: #C9B99A;
+    --brown: #8B6E52;
+    --deep: #3D2B1F;
+    --sage: #7A9E7E;
+    --sage-light: #A8C5AC;
+    --sage-dark: #4F7754;
+    --terracotta: #C47D5A;
+    --terracotta-light: #E8A882;
+    --gold: #D4A84B;
+    --text: #2C1D13;
+    --text-mid: #6B5344;
+    --text-light: #A08878;
+    --shadow: rgba(61,43,31,0.08);
+    --shadow-deep: rgba(61,43,31,0.18);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: rgba(250,246,239,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--sand);
+    animation: fadeDown 0.6s ease both;
+  }
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; font-weight: 700;
+    color: var(--deep);
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--sage);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo span { color: var(--terracotta); }
+
+  nav ul {
+    display: flex; list-style: none; gap: 32px; align-items: center;
+  }
+  nav ul a {
+    text-decoration: none; color: var(--text-mid);
+    font-size: 15px; font-weight: 500;
+    transition: color 0.2s;
+  }
+  nav ul a:hover { color: var(--sage-dark); }
+
+  .nav-cta {
+    background: var(--sage) !important;
+    color: white !important;
+    padding: 10px 22px;
+    border-radius: 100px;
+    transition: background 0.2s, transform 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--sage-dark) !important; transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 70% at 80% 50%, rgba(122,158,126,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 20% 80%, rgba(196,125,90,0.08) 0%, transparent 60%);
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 560px; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--sand); color: var(--brown);
+    padding: 6px 16px; border-radius: 100px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 0.7s 0.2s both;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 5vw, 64px);
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--deep);
+    margin-bottom: 24px;
+    animation: fadeUp 0.7s 0.3s both;
+  }
+  .hero h1 em { color: var(--sage-dark); font-style: italic; }
+
+  .hero p {
+    font-size: 18px; line-height: 1.7;
+    color: var(--text-mid);
+    margin-bottom: 40px;
+    animation: fadeUp 0.7s 0.4s both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp 0.7s 0.5s both;
+  }
+
+  .btn-primary {
+    background: var(--sage);
+    color: white;
+    padding: 16px 32px;
+    border-radius: 100px;
+    font-size: 16px; font-weight: 600;
+    border: none; cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--sage-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,119,84,0.35); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-mid);
+    padding: 16px 32px;
+    border-radius: 100px;
+    font-size: 16px; font-weight: 500;
+    border: 2px solid var(--sand);
+    cursor: pointer; transition: all 0.25s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--tan); color: var(--text); transform: translateY(-2px); }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── HERO VISUAL ── */
+  .hero-visual {
+    position: relative; z-index: 2;
+    display: flex; justify-content: center; align-items: center;
+    animation: fadeUp 0.8s 0.3s both;
+  }
+
+  .hero-card-stack {
+    position: relative; width: 380px; height: 480px;
+  }
+
+  .pet-card-hero {
+    position: absolute;
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px var(--shadow-deep);
+  }
+
+  .pet-card-hero.main {
+    width: 280px; height: 360px;
+    top: 40px; left: 50px;
+    z-index: 3;
+    animation: float 4s ease-in-out infinite;
+  }
+  .pet-card-hero.back1 {
+    width: 260px; height: 340px;
+    top: 20px; left: 80px;
+    z-index: 2;
+    transform: rotate(6deg);
+    opacity: 0.7;
+  }
+  .pet-card-hero.back2 {
+    width: 240px; height: 320px;
+    top: 10px; left: 100px;
+    z-index: 1;
+    transform: rotate(-4deg);
+    opacity: 0.4;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .pet-img-placeholder {
+    width: 100%; height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+    position: relative; overflow: hidden;
+  }
+  .cat-bg { background: linear-gradient(135deg, #FDE8D8, #F5C5A3); }
+  .dog-bg { background: linear-gradient(135deg, #D8EAE0, #B5D5BC); }
+  .rabbit-bg { background: linear-gradient(135deg, #EDE0F5, #D4B8E0); }
+
+  .pet-card-info {
+    padding: 18px 20px;
+  }
+  .pet-card-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--deep); margin-bottom: 4px;
+  }
+  .pet-card-info p { font-size: 13px; color: var(--text-light); margin-bottom: 12px; }
+  .pet-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    background: var(--cream); color: var(--text-mid);
+    padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 500;
+    border: 1px solid var(--sand);
+  }
+  .tag.sage { background: rgba(122,158,126,0.12); color: var(--sage-dark); border-color: transparent; }
+
+  /* ── FLOATING STATS ── */
+  .stat-bubble {
+    position: absolute;
+    background: white;
+    border-radius: 16px;
+    padding: 14px 18px;
+    box-shadow: 0 8px 30px var(--shadow-deep);
+    font-size: 13px; font-weight: 500; color: var(--text-mid);
+    display: flex; align-items: center; gap: 10px;
+    z-index: 10;
+    animation: float 5s ease-in-out infinite;
+  }
+  .stat-bubble.a { top: 0; right: 0; animation-delay: 1s; }
+  .stat-bubble.b { bottom: 60px; right: 10px; animation-delay: 2s; }
+  .stat-bubble-icon { font-size: 22px; }
+  .stat-bubble strong { display: block; font-size: 18px; color: var(--deep); }
+
+  /* ── TRUST BAR ── */
+  .trust-bar {
+    background: var(--deep);
+    padding: 24px 48px;
+    display: flex; align-items: center; gap: 48px;
+    overflow: hidden;
+  }
+  .trust-bar-label {
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--tan); white-space: nowrap; font-weight: 600;
+  }
+  .trust-items {
+    display: flex; gap: 48px; align-items: center;
+    flex: 1; overflow: hidden;
+  }
+  .trust-item {
+    display: flex; align-items: center; gap: 10px;
+    color: rgba(255,255,255,0.7); font-size: 14px; white-space: nowrap;
+  }
+  .trust-item span { font-size: 18px; }
+
+  /* ── SECTION STYLES ── */
+  section { padding: 96px 48px; }
+
+  .section-label {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--sage-dark); font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 48px);
+    color: var(--deep); line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .section-title em { color: var(--terracotta); font-style: italic; }
+
+  .section-sub {
+    font-size: 17px; color: var(--text-mid);
+    max-width: 520px; line-height: 1.7;
+    margin-bottom: 56px;
+  }
+
+  /* ── SEARCH BAR ── */
+  .search-section {
+    background: white;
+    border-top: 1px solid var(--sand);
+    border-bottom: 1px solid var(--sand);
+    padding: 48px;
+  }
+
+  .search-wrap {
+    max-width: 900px; margin: 0 auto;
+  }
+
+  .search-bar {
+    display: flex; gap: 0;
+    background: var(--cream);
+    border: 2px solid var(--sand);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-bar:focus-within {
+    border-color: var(--sage);
+    box-shadow: 0 0 0 4px rgba(122,158,126,0.15);
+  }
+
+  .search-input {
+    flex: 1; padding: 18px 24px;
+    border: none; background: transparent;
+    font-size: 16px; font-family: 'DM Sans', sans-serif;
+    color: var(--text); outline: none;
+  }
+  .search-input::placeholder { color: var(--text-light); }
+
+  .search-select {
+    border: none; border-left: 2px solid var(--sand);
+    background: transparent; padding: 18px 20px;
+    font-size: 15px; font-family: 'DM Sans', sans-serif;
+    color: var(--text-mid); cursor: pointer; outline: none;
+  }
+
+  .search-btn {
+    background: var(--sage);
+    border: none; color: white;
+    padding: 18px 32px; font-size: 16px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .search-btn:hover { background: var(--sage-dark); }
+
+  .filter-chips {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;
+  }
+  .chip {
+    padding: 8px 18px; border-radius: 100px;
+    background: var(--cream); border: 2px solid var(--sand);
+    font-size: 14px; color: var(--text-mid); cursor: pointer;
+    transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+  }
+  .chip:hover, .chip.active {
+    background: var(--sage); border-color: var(--sage);
+    color: white;
+  }
+  .chip.active { background: var(--sage-dark); border-color: var(--sage-dark); }
+
+  /* ── PET GRID ── */
+  .pets-section { background: var(--warm-white); }
+
+  .pets-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 40px;
+  }
+
+  .pets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+  }
+
+  .pet-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    position: relative;
+  }
+  .pet-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px var(--shadow-deep);
+  }
+
+  .pet-card-img {
+    height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 72px; position: relative;
+  }
+
+  .pet-status {
+    position: absolute; top: 14px; left: 14px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    padding: 5px 12px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .pet-status.available { color: var(--sage-dark); }
+  .pet-status.pending { color: var(--gold); }
+
+  .pet-verified {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--sage);
+    color: white; padding: 5px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px;
+  }
+
+  .pet-card-body { padding: 20px; }
+
+  .pet-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--deep); margin-bottom: 4px;
+  }
+
+  .pet-meta {
+    font-size: 13px; color: var(--text-light); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .pet-traits { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+
+  .trait {
+    background: var(--cream); color: var(--text-mid);
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 12px; font-weight: 500;
+  }
+
+  .pet-card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 16px; border-top: 1px solid var(--sand);
+  }
+
+  .owner-info { display: flex; align-items: center; gap: 8px; }
+
+  .owner-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: white;
+  }
+
+  .owner-name { font-size: 13px; color: var(--text-mid); font-weight: 500; }
+
+  .contact-btn {
+    background: var(--terracotta);
+    color: white; border: none;
+    padding: 9px 18px; border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .contact-btn:hover { background: #A8613D; transform: scale(1.04); }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { background: var(--deep); color: white; }
+
+  .how-section .section-label { color: var(--sage-light); }
+  .how-section .section-title { color: white; }
+  .how-section .section-sub { color: rgba(255,255,255,0.6); }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .step {
+    padding: 40px 36px;
+    background: rgba(255,255,255,0.03);
+    transition: background 0.3s;
+    position: relative;
+  }
+  .step:hover { background: rgba(255,255,255,0.07); }
+
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px; color: rgba(255,255,255,0.06);
+    line-height: 1; margin-bottom: 16px;
+    font-weight: 700;
+  }
+
+  .step-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 20px;
+  }
+
+  .step h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: white; margin-bottom: 10px;
+  }
+  .step p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+  /* ── VERIFICATION ── */
+  .verify-section {
+    background: white;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+  }
+
+  .verify-visual {
+    background: var(--cream);
+    border-radius: 24px; padding: 40px;
+    border: 2px solid var(--sand);
+  }
+
+  .verify-card {
+    background: white; border-radius: 16px;
+    padding: 28px; box-shadow: 0 8px 30px var(--shadow);
+  }
+
+  .verify-steps { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+
+  .verify-step {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 18px; border-radius: 12px;
+    border: 2px solid var(--sand);
+    transition: all 0.3s;
+  }
+  .verify-step.done { border-color: var(--sage); background: rgba(122,158,126,0.05); }
+  .verify-step.active { border-color: var(--gold); background: rgba(212,168,75,0.05); }
+
+  .vstep-icon {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .vstep-icon.done { background: var(--sage); }
+  .vstep-icon.active { background: var(--gold); }
+  .vstep-icon.pending { background: var(--sand); }
+
+  .vstep-text h4 { font-size: 14px; font-weight: 600; color: var(--deep); }
+  .vstep-text p { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+
+  /* ── LIST PET / MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(45,30,20,0.65);
+    backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 28px;
+    width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.25);
+    animation: modalIn 0.35s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform:scale(0.88) translateY(24px); }
+    to { opacity:1; transform:scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    padding: 32px 36px 24px;
+    border-bottom: 1px solid var(--sand);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; color: var(--deep);
+  }
+  .modal-close {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--cream); border: none; cursor: pointer;
+    font-size: 18px; display: flex; align-items: center; justify-content: center;
+    color: var(--text-mid); transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--sand); }
+
+  .modal-body { padding: 32px 36px; }
+
+  .form-group { margin-bottom: 24px; }
+  .form-label {
+    display: block; font-size: 14px; font-weight: 600;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .form-label .req { color: var(--terracotta); }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 14px 18px;
+    border: 2px solid var(--sand);
+    border-radius: 12px;
+    font-size: 15px; font-family: 'DM Sans', sans-serif;
+    color: var(--text); background: var(--cream);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--sage);
+    box-shadow: 0 0 0 4px rgba(122,158,126,0.12);
+    background: white;
+  }
+  .form-textarea { resize: vertical; min-height: 100px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .upload-zone {
+    border: 2px dashed var(--tan);
+    border-radius: 12px; padding: 40px 20px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; background: var(--cream);
+  }
+  .upload-zone:hover { border-color: var(--sage); background: rgba(122,158,126,0.04); }
+  .upload-zone p { font-size: 14px; color: var(--text-light); margin-top: 10px; }
+  .upload-icon { font-size: 36px; }
+
+  .modal-footer {
+    padding: 24px 36px 32px;
+    display: flex; gap: 12px;
+  }
+  .modal-footer .btn-primary { flex: 1; text-align: center; }
+
+  /* ── CONTACT MODAL ── */
+  .contact-modal .modal-body { text-align: center; }
+
+  .contact-pet-preview {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--cream); border-radius: 14px; padding: 16px 20px;
+    margin-bottom: 28px; text-align: left;
+  }
+  .contact-pet-emoji { font-size: 40px; }
+  .contact-pet-info h4 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--deep); }
+  .contact-pet-info p { font-size: 13px; color: var(--text-light); }
+
+  .contact-methods { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; text-align: left; }
+
+  .contact-method {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px; border-radius: 14px;
+    border: 2px solid var(--sand); cursor: pointer;
+    transition: all 0.2s; background: white;
+  }
+  .contact-method:hover { border-color: var(--sage); background: rgba(122,158,126,0.03); }
+  .contact-method-icon { font-size: 24px; }
+  .contact-method-text h4 { font-size: 14px; font-weight: 600; color: var(--deep); }
+  .contact-method-text p { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .contact-method-arrow { margin-left: auto; color: var(--text-light); }
+
+  .verify-notice {
+    background: rgba(122,158,126,0.08);
+    border: 1px solid rgba(122,158,126,0.25);
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: var(--sage-dark);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-section { background: var(--cream); }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .testimonial {
+    background: white; border-radius: 20px;
+    padding: 32px; box-shadow: 0 4px 20px var(--shadow);
+    transition: transform 0.3s;
+  }
+  .testimonial:hover { transform: translateY(-4px); }
+
+  .stars { color: var(--gold); font-size: 18px; margin-bottom: 16px; }
+
+  .testimonial q {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; line-height: 1.6; color: var(--deep);
+    font-style: italic; display: block; margin-bottom: 20px;
+  }
+
+  .testimonial-author {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .t-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: white;
+  }
+  .t-author-name { font-size: 14px; font-weight: 600; color: var(--deep); }
+  .t-author-loc { font-size: 12px; color: var(--text-light); }
+
+  /* ── CTA BANNER ── */
+  .cta-section {
+    background: var(--sage-dark);
+    text-align: center; color: white;
+    padding: 100px 48px;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: '🐱 🐶 🐰 🐹 🐦 🐠';
+    position: absolute; top: -10px; left: 0; right: 0;
+    font-size: 80px; opacity: 0.06; letter-spacing: 30px;
+    white-space: nowrap; overflow: hidden;
+  }
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 52px); margin-bottom: 20px;
+    position: relative;
+  }
+  .cta-section p {
+    font-size: 18px; opacity: 0.8; margin-bottom: 40px;
+    max-width: 500px; margin-left: auto; margin-right: auto;
+    position: relative;
+  }
+  .cta-section .btn-primary {
+    background: white; color: var(--sage-dark);
+    font-size: 17px; padding: 18px 40px;
+    position: relative;
+  }
+  .cta-section .btn-primary:hover { background: var(--cream); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--deep); color: rgba(255,255,255,0.6);
+    padding: 60px 48px 40px;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px; margin-bottom: 48px;
+  }
+  .footer-brand .logo { color: white; margin-bottom: 16px; }
+  .footer-brand p { font-size: 14px; line-height: 1.7; max-width: 260px; }
+
+  .footer-col h4 {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--tan);
+    margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul a {
+    text-decoration: none; color: rgba(255,255,255,0.5);
+    font-size: 14px; transition: color 0.2s;
+  }
+  .footer-col ul a:hover { color: rgba(255,255,255,0.9); }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px;
+  }
+
+  /* ── SIGN UP MODAL ── */
+  .auth-tabs {
+    display: flex; border-bottom: 1px solid var(--sand); margin-bottom: 28px;
+  }
+  .auth-tab {
+    flex: 1; padding: 14px; text-align: center;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    color: var(--text-light); border-bottom: 3px solid transparent;
+    transition: all 0.2s; margin-bottom: -1px;
+    background: none; border-left: none; border-right: none; border-top: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .auth-tab.active {
+    color: var(--sage-dark);
+    border-bottom-color: var(--sage-dark);
+  }
+
+  .success-msg {
+    background: rgba(122,158,126,0.1);
+    border: 2px solid var(--sage);
+    border-radius: 14px; padding: 20px;
+    text-align: center; color: var(--sage-dark);
+    font-weight: 600; font-size: 16px;
+    display: none;
+  }
+  .success-msg.show { display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; text-align: center; }
+    .hero-visual { display: none; }
+    nav { padding: 0 24px; }
+    nav ul { gap: 16px; }
+    section { padding: 64px 24px; }
+    .verify-section { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .search-section { padding: 32px 24px; }
+    .trust-bar { padding: 20px 24px; gap: 24px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-icon">🐾</div>
+    Pet<span>Bridge</span>
+  </a>
+  <ul>
+    <li><a href="#pets">Browse Pets</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#safety">Safety</a></li>
+    <li><a href="#" onclick="openModal('authModal')" style="text-decoration:none;color:var(--text-mid);font-size:15px;font-weight:500;">Sign In</a></li>
+    <li><a href="#" onclick="openModal('listModal')" class="nav-cta">List a Pet</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🛡️ Verified & Safe Adoptions</div>
+    <h1>A <em>better home</em> for every pet in need</h1>
+    <p>No more chaotic Facebook groups or shady posts. PetBridge connects verified adopters with loving owners — safely, simply, and with full peace of mind.</p>
+    <div class="hero-actions">
+      <a href="#pets" class="btn-primary">Find a Pet 🐾</a>
+      <a href="#" onclick="openModal('listModal')" class="btn-secondary">Rehome Your Pet</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card-stack">
+      <div class="pet-card-hero back2">
+        <div class="pet-img-placeholder rabbit-bg">🐰</div>
+      </div>
+      <div class="pet-card-hero back1">
+        <div class="pet-img-placeholder dog-bg">🐶</div>
+      </div>
+      <div class="pet-card-hero main">
+        <div class="pet-img-placeholder cat-bg">🐱</div>
+        <div class="pet-card-info">
+          <h3>Luna</h3>
+          <p>2 years old · Female · London</p>
+          <div class="pet-tags">
+            <span class="tag">Vaccinated</span>
+            <span class="tag sage">✓ Verified</span>
+            <span class="tag">Indoor</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-bubble a">
+        <div class="stat-bubble-icon">🏡</div>
+        <div><strong>2,400+</strong>Pets Rehomed</div>
+      </div>
+      <div class="stat-bubble b">
+        <div class="stat-bubble-icon">⭐</div>
+        <div><strong>4.9/5</strong>Avg. Rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-bar-label">Trusted by</div>
+  <div class="trust-items">
+    <div class="trust-item"><span>🛡️</span> ID Verified Owners</div>
+    <div class="trust-item"><span>💬</span> Direct Messaging</div>
+    <div class="trust-item"><span>🏥</span> Vet Record Uploads</div>
+    <div class="trust-item"><span>📍</span> Location Matched</div>
+    <div class="trust-item"><span>🔒</span> GDPR Compliant</div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-section" id="pets">
+  <div class="search-wrap">
+    <div class="search-bar">
+      <input class="search-input" placeholder="Search by breed, name, or type…" type="text">
+      <select class="search-select">
+        <option>All Locations</option>
+        <option>London</option>
+        <option>Manchester</option>
+        <option>Birmingham</option>
+        <option>Leeds</option>
+        <option>Bristol</option>
+      </select>
+      <button class="search-btn">Search 🔍</button>
+    </div>
+    <div class="filter-chips">
+      <button class="chip active" onclick="filterPets(this, 'all')">All Pets</button>
+      <button class="chip" onclick="filterPets(this, 'cat')">🐱 Cats</button>
+      <button class="chip" onclick="filterPets(this, 'dog')">🐶 Dogs</button>
+      <button class="chip" onclick="filterPets(this, 'rabbit')">🐰 Rabbits</button>
+      <button class="chip" onclick="filterPets(this, 'bird')">🐦 Birds</button>
+      <button class="chip" onclick="filterPets(this, 'other')">🐾 Other</button>
+      <button class="chip" onclick="filterPets(this, 'verified')">✓ Verified Only</button>
+    </div>
+  </div>
+</div>
+
+<!-- PET LISTINGS -->
+<section class="pets-section">
+  <div class="pets-header">
+    <div>
+      <span class="section-label">Available Now</span>
+      <h2 class="section-title">Pets looking for <em>their people</em></h2>
+    </div>
+    <div style="font-size:14px;color:var(--text-light);">Showing <strong style="color:var(--text)">24 pets</strong> near you</div>
+  </div>
+
+  <div class="pets-grid" id="petsGrid">
+    <!-- Cards injected by JS -->
+  </div>
+
+  <div style="text-align:center;margin-top:48px;">
+    <button class="btn-secondary" style="font-size:16px;">Load More Pets</button>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <span class="section-label">The Process</span>
+  <h2 class="section-title">Adoption made <em>simple & safe</em></h2>
+  <p class="section-sub">We built the platform we wished existed. Every step is designed to protect both the pet and everyone involved.</p>
+
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-icon" style="background:rgba(122,158,126,0.15);">🔐</div>
+      <h3>Create & Verify</h3>
+      <p>Sign up and complete our quick ID verification. Takes 2 minutes and ensures everyone on PetBridge is who they say they are.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-icon" style="background:rgba(196,125,90,0.15);">🔍</div>
+      <h3>Browse Listings</h3>
+      <p>Filter by pet type, age, location, and more. Every listing shows vaccination records, vet notes, and owner verification status.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-icon" style="background:rgba(212,168,75,0.15);">💬</div>
+      <h3>Message Safely</h3>
+      <p>Connect directly with owners through our secure in-app messaging. No phone numbers shared until you're both comfortable.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-icon" style="background:rgba(122,158,126,0.15);">🏡</div>
+      <h3>Meet & Adopt</h3>
+      <p>Arrange a safe meeting, sign our digital adoption agreement, and welcome your new family member home. That's it!</p>
+    </div>
+  </div>
+</section>
+
+<!-- VERIFICATION SECTION -->
+<section class="verify-section" id="safety">
+  <div>
+    <span class="section-label">Safety First</span>
+    <h2 class="section-title">Pets deserve to go to <em>the right home</em></h2>
+    <p class="section-sub">Our verification process isn't bureaucracy — it's our promise to every animal that passes through PetBridge that they'll be safe.</p>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:16px;margin-bottom:32px;">
+      <li style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="color:var(--sage-dark);font-size:20px;margin-top:2px;">✓</span>
+        <div>
+          <strong style="color:var(--deep);display:block;margin-bottom:2px;">Government ID Check</strong>
+          <span style="font-size:14px;color:var(--text-light);">Every user verifies their identity before listing or contacting a pet owner.</span>
+        </div>
+      </li>
+      <li style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="color:var(--sage-dark);font-size:20px;margin-top:2px;">✓</span>
+        <div>
+          <strong style="color:var(--deep);display:block;margin-bottom:2px;">Vet Records Encouraged</strong>
+          <span style="font-size:14px;color:var(--text-light);">Owners can upload vaccination and health records — shown as a badge on listings.</span>
+        </div>
+      </li>
+      <li style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="color:var(--sage-dark);font-size:20px;margin-top:2px;">✓</span>
+        <div>
+          <strong style="color:var(--deep);display:block;margin-bottom:2px;">Adoption Agreement</strong>
+          <span style="font-size:14px;color:var(--text-light);">A lightweight digital agreement gives both parties a clear, shared commitment.</span>
+        </div>
+      </li>
+      <li style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="color:var(--sage-dark);font-size:20px;margin-top:2px;">✓</span>
+        <div>
+          <strong style="color:var(--deep);display:block;margin-bottom:2px;">Report & Review System</strong>
+          <span style="font-size:14px;color:var(--text-light);">Community ratings and a clear reporting system keep bad actors out.</span>
+        </div>
+      </li>
+    </ul>
+    <a href="#" onclick="openModal('authModal')" class="btn-primary">Get Verified — It's Free</a>
+  </div>
+
+  <div class="verify-visual">
+    <div class="verify-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7A9E7E,#4F7754);display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>
+        <div>
+          <div style="font-weight:600;color:var(--deep);">Sarah M.</div>
+          <div style="font-size:12px;color:var(--text-light);">Verification in progress…</div>
+        </div>
+        <div style="margin-left:auto;background:rgba(212,168,75,0.1);color:#A07C1A;padding:4px 12px;border-radius:100px;font-size:12px;font-weight:600;">Pending</div>
+      </div>
+
+      <div class="verify-steps">
+        <div class="verify-step done">
+          <div class="vstep-icon done">✅</div>
+          <div class="vstep-text">
+            <h4>Email Confirmed</h4>
+            <p>sarah@email.com verified</p>
+          </div>
+        </div>
+        <div class="verify-step done">
+          <div class="vstep-icon done">✅</div>
+          <div class="vstep-text">
+            <h4>Phone Verified</h4>
+            <p>+44 7xxx xxx xxx</p>
+          </div>
+        </div>
+        <div class="verify-step active">
+          <div class="vstep-icon active" style="color:white;">📋</div>
+          <div class="vstep-text">
+            <h4>ID Upload</h4>
+            <p>Review in progress (1–2 hours)</p>
+          </div>
+        </div>
+        <div class="verify-step">
+          <div class="vstep-icon pending" style="color:var(--text-light);">🏡</div>
+          <div class="vstep-text">
+            <h4>Address Confirmed</h4>
+            <p>Not started</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding:14px;background:var(--cream);border-radius:12px;font-size:13px;color:var(--text-mid);">
+        🔒 Your data is encrypted and never shared with third parties.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <span class="section-label">Happy Tails</span>
+  <h2 class="section-title" style="margin-bottom:48px;">What adopters are <em>saying</em></h2>
+
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <q>After months of scrolling Facebook groups and getting ghosted, I found Mochi on PetBridge in 20 minutes. The verification gave me so much confidence.</q>
+      <div class="testimonial-author">
+        <div class="t-avatar" style="background:linear-gradient(135deg,#C47D5A,#8B6E52);">A</div>
+        <div>
+          <div class="t-author-name">Aisha K.</div>
+          <div class="t-author-loc">London · Adopted a cat</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <q>As someone rehoming my dog due to a house move, PetBridge helped me find the most wonderful family. I cried happy tears when they sent photos.</q>
+      <div class="testimonial-author">
+        <div class="t-avatar" style="background:linear-gradient(135deg,#7A9E7E,#4F7754);">J</div>
+        <div>
+          <div class="t-author-name">James R.</div>
+          <div class="t-author-loc">Manchester · Rehomed a dog</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <q>I was nervous about adopting my first rabbit. The health records on PetBridge and the messaging system made the whole process feel completely safe.</q>
+      <div class="testimonial-author">
+        <div class="t-avatar" style="background:linear-gradient(135deg,#D4A84B,#9C7620);">P</div>
+        <div>
+          <div class="t-author-name">Priya S.</div>
+          <div class="t-author-loc">Bristol · Adopted a rabbit</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to build your bridge?</h2>
+  <p>Join thousands of people giving pets the second chance they deserve.</p>
+  <button class="btn-primary" onclick="openModal('authModal')">Join PetBridge — Free</button>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo" style="margin-bottom:16px;display:inline-flex;">
+        <div class="logo-icon">🐾</div>
+        Pet<span style="color:var(--terracotta-light);">Bridge</span>
+      </a>
+      <p>A safer, simpler way to rehome and adopt pets. Built with love for animals and the people who care for them.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Adopt</h4>
+      <ul>
+        <li><a href="#">Browse Cats</a></li>
+        <li><a href="#">Browse Dogs</a></li>
+        <li><a href="#">Browse Rabbits</a></li>
+        <li><a href="#">All Pets</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Rehome</h4>
+      <ul>
+        <li><a href="#">List a Pet</a></li>
+        <li><a href="#">Listing Guide</a></li>
+        <li><a href="#">Vet Records</a></li>
+        <li><a href="#">Adoption Tips</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Safety Policy</a></li>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 PetBridge. Made with 🐾 in the UK.</span>
+    <span>Keeping pets & people safe, always.</span>
+  </div>
+</footer>
+
+<!-- ══ LIST PET MODAL ══ -->
+<div class="modal-overlay" id="listModal" onclick="closeOnBg(event,'listModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">List Your Pet 🐾</div>
+      <button class="modal-close" onclick="closeModal('listModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="listSuccess" class="success-msg">
+        🎉 Your listing is submitted! We'll review and publish it within 2 hours.
+      </div>
+      <div id="listForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Pet Name <span class="req">*</span></label>
+            <input class="form-input" placeholder="e.g. Luna" type="text">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pet Type <span class="req">*</span></label>
+            <select class="form-select">
+              <option>Cat</option><option>Dog</option><option>Rabbit</option>
+              <option>Bird</option><option>Hamster</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Breed</label>
+            <input class="form-input" placeholder="e.g. Domestic Shorthair" type="text">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Age <span class="req">*</span></label>
+            <input class="form-input" placeholder="e.g. 2 years" type="text">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-select"><option>Female</option><option>Male</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Location <span class="req">*</span></label>
+            <input class="form-input" placeholder="e.g. London, UK" type="text">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">About this pet <span class="req">*</span></label>
+          <textarea class="form-textarea" placeholder="Tell adopters about their personality, habits, and what kind of home they'd thrive in…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Photos</label>
+          <div class="upload-zone">
+            <div class="upload-icon">📷</div>
+            <p>Drop photos here or click to upload</p>
+            <p style="font-size:12px;margin-top:4px;color:var(--tan);">JPG or PNG, max 5MB each</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vet / Health Records</label>
+          <div class="upload-zone" style="padding:24px 20px;">
+            <div class="upload-icon" style="font-size:28px;">🏥</div>
+            <p>Upload vaccination card or vet letter (optional but recommended)</p>
+          </div>
+        </div>
+        <div style="padding:14px 18px;background:rgba(122,158,126,0.08);border:1px solid rgba(122,158,126,0.2);border-radius:10px;font-size:13px;color:var(--sage-dark);margin-bottom:4px;">
+          🛡️ Your listing will only be visible after identity verification is complete.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('listModal')">Cancel</button>
+      <button class="btn-primary" onclick="submitList()">Submit Listing →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONTACT MODAL ══ -->
+<div class="modal-overlay" id="contactModal" onclick="closeOnBg(event,'contactModal')">
+  <div class="modal contact-modal">
+    <div class="modal-header">
+      <div class="modal-title">Contact Owner</div>
+      <button class="modal-close" onclick="closeModal('contactModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="contact-pet-preview" id="contactPetPreview">
+        <div class="contact-pet-emoji" id="contactEmoji">🐱</div>
+        <div class="contact-pet-info">
+          <h4 id="contactPetName">Luna</h4>
+          <p id="contactPetDesc">2 years · Female · London</p>
+        </div>
+      </div>
+      <div class="contact-methods">
+        <div class="contact-method" onclick="alert('Opening secure chat…')">
+          <div class="contact-method-icon">💬</div>
+          <div class="contact-method-text">
+            <h4>Message on PetBridge</h4>
+            <p>Secure, in-app messaging — recommended</p>
+          </div>
+          <div class="contact-method-arrow">→</div>
+        </div>
+        <div class="contact-method" onclick="alert('Email will be shared once both parties agree.')">
+          <div class="contact-method-icon">📧</div>
+          <div class="contact-method-text">
+            <h4>Request Email Contact</h4>
+            <p>Owner will approve before sharing</p>
+          </div>
+          <div class="contact-method-arrow">→</div>
+        </div>
+      </div>
+      <div class="verify-notice">
+        🛡️ You must be verified to contact pet owners. <a href="#" onclick="closeModal('contactModal');openModal('authModal')" style="color:var(--sage-dark);font-weight:700;margin-left:4px;">Verify now →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AUTH MODAL ══ -->
+<div class="modal-overlay" id="authModal" onclick="closeOnBg(event,'authModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Join PetBridge 🐾</div>
+      <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab(this,'signup')">Create Account</button>
+        <button class="auth-tab" onclick="switchTab(this,'login')">Sign In</button>
+      </div>
+      <div id="authSuccess" class="success-msg">
+        🎉 Welcome to PetBridge! Check your email to confirm your account.
+      </div>
+      <div id="signupForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name <span class="req">*</span></label>
+            <input class="form-input" placeholder="Your first name" type="text">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name <span class="req">*</span></label>
+            <input class="form-input" placeholder="Your last name" type="text">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address <span class="req">*</span></label>
+          <input class="form-input" placeholder="you@email.com" type="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span class="req">*</span></label>
+          <input class="form-input" placeholder="Min 8 characters" type="password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Location</label>
+          <input class="form-input" placeholder="City, Country" type="text">
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;font-size:13px;color:var(--text-mid);">
+          <input type="checkbox" id="terms" style="margin-top:3px;flex-shrink:0;">
+          <label for="terms">I agree to PetBridge's <a href="#" style="color:var(--sage-dark);">Terms of Service</a> and <a href="#" style="color:var(--sage-dark);">Privacy Policy</a></label>
+        </div>
+        <button class="btn-primary" style="width:100%;text-align:center;" onclick="submitAuth()">Create My Account →</button>
+        <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-light);">
+          After signing up, you'll complete a quick ID verification to unlock all features.
+        </div>
+      </div>
+      <div id="loginForm" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" placeholder="you@email.com" type="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" placeholder="Your password" type="password">
+        </div>
+        <button class="btn-primary" style="width:100%;text-align:center;" onclick="submitAuth()">Sign In →</button>
+        <div style="text-align:center;margin-top:16px;">
+          <a href="#" style="font-size:13px;color:var(--sage-dark);">Forgot password?</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── PET DATA ──
+const pets = [
+  { name:'Luna', type:'cat', emoji:'🐱', bg:'linear-gradient(135deg,#FDE8D8,#F5C5A3)', age:'2 years', gender:'Female', location:'London', traits:['Vaccinated','Indoor','Gentle'], owner:'Sarah M.', ownerColor:'#C47D5A', verified:true, status:'available' },
+  { name:'Biscuit', type:'dog', emoji:'🐶', bg:'linear-gradient(135deg,#D8EAE0,#B5D5BC)', age:'4 years', gender:'Male', location:'Manchester', traits:['Neutered','Child-friendly','Active'], owner:'James R.', ownerColor:'#7A9E7E', verified:true, status:'available' },
+  { name:'Clover', type:'rabbit', emoji:'🐰', bg:'linear-gradient(135deg,#EDE0F5,#D4B8E0)', age:'1 year', gender:'Female', location:'Bristol', traits:['Vaccinated','Litter trained'], owner:'Priya S.', ownerColor:'#9B59B6', verified:true, status:'available' },
+  { name:'Mango', type:'bird', emoji:'🦜', bg:'linear-gradient(135deg,#FFFAE0,#FFE999)', age:'3 years', gender:'Male', location:'Leeds', traits:['Talks','Tame','Friendly'], owner:'Tom B.', ownerColor:'#D4A84B', verified:false, status:'available' },
+  { name:'Pebble', type:'cat', emoji:'🐱', bg:'linear-gradient(135deg,#E0EFFF,#B5CFEE)', age:'6 months', gender:'Male', location:'Edinburgh', traits:['Vaccinated','Playful','Indoor'], owner:'Anna L.', ownerColor:'#4A90D9', verified:true, status:'pending' },
+  { name:'Rufus', type:'dog', emoji:'🐶', bg:'linear-gradient(135deg,#FFE8D8,#FFD0B5)', age:'7 years', gender:'Male', location:'London', traits:['Neutered','Calm','House-trained'], owner:'David K.', ownerColor:'#C47D5A', verified:true, status:'available' },
+  { name:'Snowbell', type:'rabbit', emoji:'🐰', bg:'linear-gradient(135deg,#F5F5F5,#E5E5E5)', age:'2 years', gender:'Female', location:'Birmingham', traits:['Friendly','Litter trained'], owner:'Mei C.', ownerColor:'#7A9E7E', verified:false, status:'available' },
+  { name:'Captain', type:'cat', emoji:'😺', bg:'linear-gradient(135deg,#E8F5E8,#C5E0C5)', age:'5 years', gender:'Male', location:'Liverpool', traits:['Vaccinated','Neutered','Outdoor'], owner:'Rob F.', ownerColor:'#4F7754', verified:true, status:'available' },
+];
+
+function renderPets(list) {
+  const grid = document.getElementById('petsGrid');
+  grid.innerHTML = list.map((p,i) => `
+    <div class="pet-card" style="animation:fadeUp 0.5s ${i*0.07}s both">
+      <div class="pet-card-img" style="background:${p.bg}">
+        <span style="font-size:72px">${p.emoji}</span>
+        <div class="pet-status ${p.status}">${p.status === 'available' ? '● Available' : '⏳ Pending'}</div>
+        ${p.verified ? '<div class="pet-verified">✓ Verified</div>' : ''}
+      </div>
+      <div class="pet-card-body">
+        <div class="pet-name">${p.name}</div>
+        <div class="pet-meta">
+          <span>${p.age}</span> · <span>${p.gender}</span> · <span>📍 ${p.location}</span>
+        </div>
+        <div class="pet-traits">
+          ${p.traits.map(t => `<span class="trait">${t}</span>`).join('')}
+        </div>
+        <div class="pet-card-footer">
+          <div class="owner-info">
+            <div class="owner-avatar" style="background:${p.ownerColor}">${p.owner[0]}</div>
+            <span class="owner-name">${p.owner}</span>
+          </div>
+          <button class="contact-btn" onclick="openContact('${p.emoji}','${p.name}','${p.age} · ${p.gender} · ${p.location}')">
+            Contact →
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderPets(pets);
+
+let activeChip = 'all';
+function filterPets(btn, type) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  activeChip = type;
+  let filtered = type === 'all' ? pets
+    : type === 'verified' ? pets.filter(p => p.verified)
+    : pets.filter(p => p.type === type);
+  renderPets(filtered);
+}
+
+// ── MODALS ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnBg(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+function openContact(emoji, name, desc) {
+  document.getElementById('contactEmoji').textContent = emoji;
+  document.getElementById('contactPetName').textContent = name;
+  document.getElementById('contactPetDesc').textContent = desc;
+  openModal('contactModal');
+}
+
+function submitList() {
+  document.getElementById('listSuccess').classList.add('show');
+  document.getElementById('listForm').style.display = 'none';
+  document.querySelector('#listModal .modal-footer').style.display = 'none';
+}
+
+function submitAuth() {
+  document.getElementById('authSuccess').classList.add('show');
+  document.getElementById('signupForm').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'none';
+  document.querySelector('#authModal .auth-tabs').style.display = 'none';
+}
+
+function switchTab(tab, which) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('signupForm').style.display = which === 'signup' ? 'block' : 'none';
+  document.getElementById('loginForm').style.display = which === 'login' ? 'block' : 'none';
+}
+
+// Close modals with Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['listModal','contactModal','authModal'].forEach(closeModal);
+  }
+});
+</script>
+</body>
+</html>
